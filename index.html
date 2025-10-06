@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Trivia Quizz App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-container">
+        <header class="header">
+            <h1>Tech Trivia App</h1>
+            <p>A tech quizz app to test your knowledge about technology</p>
+        </header>
+
+        <div id="quizContainer" class="quiz-container">
+
+            <!--Progress bar-->
+            <div class="progress">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+                <p id="progressText" class="progress-text">Question 1 of 12</p>
+
+                <!--Question section-->
+                <div id="questions" class="question-section">
+                    <h2 id="questionText"></h2>
+                    <div id="option" class="option-container"></div>
+                    <button id="nextBtn" class="next-btn" disabled>Next</button>
+                </div>
+                
+                <!--Result section-->
+                <div id="results" class="result-section" style="display: none;">
+                    <h2>Your Results</h2>
+                    <div id="displayScore" class="score"></div>
+                    <div id="category" class="category-breakdown"></div>
+                    <div id="answers" class="review-answers"></div>
+                    <button id="restartBtn" class="restart-btn">Restart Quiz</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
+</body>
+</html>
