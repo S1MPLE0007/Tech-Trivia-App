@@ -276,3 +276,127 @@ let categoryScore = {
   "Tech History & Innovation": 0,
   "Software Engineering": 0,
 };
+
+//DOM elements
+
+const questionText = document.getElementById("questionText");
+const optionsContainer = document.getElementById("optionsContainer");
+const nextBtn = document.getElementById("nextBtn");
+const progressFill = document.getElementById("progressFill");
+const progressText = document.getElementById("progressText");
+const questions = document.getElementById("questions");
+const results = document.getElementById("results");
+const displayScore = document.getElementById("displayScore");
+const category = document.getElementById("category");
+const answers = document.getElementById("answers");
+const restartBtn = document.getElementById("restartBtn");
+
+//Intialize quiz
+
+function initQuiz() {
+  currentQuestion = 0;
+  score = 0;
+  userAnswer = [];
+  Object.keys(categoryScore).forEach((cat) => (categoryScore[cat] = 0));
+  loadQuestion();
+  nextBtn.disabled = true;
+}
+
+//load questions
+
+function loadQuestion() {
+  const q = quizData[currentQuestion];
+  questionText.textContent = q.questions;
+  optionsContainer.innerHTML = "";
+
+  q.options.forEach((option, index) => {
+    const div = document.createElement("div");
+    div.className = "option";
+    div.innerHTML = `
+        <input type="radio" id="opt${index}" name="answer" value="${index}">
+        <label for="opt${index}">${option}</label>`;
+
+    div.addEventListener("click", () => selectOption(index, div));
+    optionsContainer.appendChild(div);
+  });
+
+  updateProgress();
+  nextBtn.textContent =
+    currentQuestion === quizData.length - 1 ? "Submit" : "Next";
+}
+
+// Select option
+
+function selectOption(index, element) {
+  document.querySelectorAll(".option").forEach((opt) => {
+    opt.classList.remove("selected");
+    const radio = opt.querySelector('input[type="radio"]');
+    radio.checked = false;
+  });
+
+  //select this one
+  element.classList.add("selected");
+  element.querySelector('input[type="radio"]').checked = true;
+  nextBtn.disabled = false;
+  userAnswer[currentQuestion] = index;
+}
+
+//next button handler
+
+nextBtn.addEventListener("click", () => {
+  if (currentQuestion < quizData.length - 1) {
+    currentQuestion++;
+    loadQuestion();
+    nextBtn.disabled = true;
+  } else {
+    calculateScore();
+    showResults();
+  }
+});
+
+//update progress
+
+function updateProgress() {
+  const progress = ((currentQuestion + 1) / quizData.length) * 100;
+  progressFill.style.width = progress + "%";
+  progressText.textContent = `Question ${currentQuestion + 1} of ${
+    quizData.length
+  }`;
+}
+
+//calculate the score
+
+function calculateScore() {
+  quizData.forEach((q, index) => {
+    if (userAnswer[index] === q.correct) {
+      score++;
+      categoryScore[q.category]++;
+    }
+  });
+}
+
+//Show Results
+
+function showResults() {
+  questions.style.display = "none";
+  results.style.display = "block";
+
+  const percentage = Math.round((score / quizData.length) * 100);
+  displayScore.innerHTML = `
+        <div class="score">${score} / ${quizData.length}</div>
+        <div style="font-size: 1.2rem; color: #666;">${percentage}%</div>`;
+
+  //Category breakdown
+  category.innerHTML = "<h3>Category Breakdown</h3>";
+  Object.entries(categoryScore).forEach(([cat, catScore]) => {
+    const maxPerCat = 6; // number of questions per category
+    const catPercentage = Math.round((catScore / maxPerCat) * 100);
+    const div = document.createElement("div");
+    div.className = "category-item";
+    div.innerHTML = `
+          <span>${cat}</span>
+          <span>${catScore}/${maxPerCat} (${catPercentage}%)</span>`;
+
+    category.appendChild(div);
+  });
+}

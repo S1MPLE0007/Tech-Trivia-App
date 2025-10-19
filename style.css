@@ -83,6 +83,43 @@ body {
     margin-bottom: 2rem;
 }
 
+.option {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.option:hover {
+    background: #e3f2fd;
+    border-color: #2196f3;
+}
+
+.option input[type="radio"] {
+    margin-right: 1rem;
+    transform: scale(1.2);
+}
+
+.option.selected {
+    background: #e3f2fd;
+    border-color: #2196f3;
+}
+
+.option.correct {
+    background: #d4edda;
+    border-color: #28a745;
+}
+
+.option.incorrect {
+    background: #f8d7da;
+    border-color: #dc3545;
+}
+
 .next-btn {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #ffffff;
@@ -107,4 +144,96 @@ body {
 .result-section {
     display: none;
     text-align: center;
+}
+
+.score {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #667eea;
+}
+
+.category-breakdown {
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+}
+
+.review-answers {
+    margin: 2rem 0;
+    text-align: left;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.review-item {
+    padding: 1rem;
+    border-left: 4px solid #667eea;
+    background: #f8f9fa;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+}
+
+.review-item.correct {
+    border-left-color: #28a745;
+}
+
+.review-item.incorrect {
+    border-left-color: #dc3545;
+}
+
+.restart-btn {
+    background: #28a745;
+    color: #ffffff;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.restart-btn:hover {
+    background: #218838;
+}
+
+
+@media (max-width: 768px) {
+    .container {
+        margin: 0.5rem;
+        border-radius: 8px;
+    }
+    .header {
+        padding: 1.5rem;
+    }
+    .header h1 {
+        font-size: 2rem;
+    }
+    .quiz-container {
+        padding: 1.5rem;
+    }
+    .option {
+        padding: 0.75rem;
+        font-size: 0.95rem;
+    }
+    .score {
+        font-size: 2.5rem;
+    }
+}
+
+/* Animation for Feedback */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.question-section, .results-section {
+    animation: fadeIn 0.5s ease;
 }
