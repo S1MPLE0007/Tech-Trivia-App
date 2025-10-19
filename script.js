@@ -30,15 +30,8 @@ const dataQuestions = [
   },
   {
     category: "Web Development",
-    question:
-      "Which attribute is used to provide an alternate text for an image?",
-    options: ["title", "alt", "src", "name"],
-    correct: 1,
-  },
-  {
-    category: "Web Development",
     question: "Which HTML tag is used to create a hyperlink?",
-    options: ["<a>", "<link>", "<href>", "<src>"],
+    options: ["a", "link", "href", "src"],
     correct: 0,
   },
   {
@@ -264,8 +257,15 @@ const dataQuestions = [
   },
 ];
 
-//Game state
+//function on shuffle
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
 
+//Game state
 let currentQuestion = 0;
 let score = 0;
 let userAnswer = [];
@@ -278,7 +278,6 @@ let categoryScore = {
 };
 
 //DOM elements
-
 const questionText = document.getElementById("questionText");
 const optionsContainer = document.getElementById("optionsContainer");
 const nextBtn = document.getElementById("nextBtn");
@@ -291,112 +290,187 @@ const category = document.getElementById("category");
 const answers = document.getElementById("answers");
 const restartBtn = document.getElementById("restartBtn");
 
-//Intialize quiz
+// Initialized quiz on page load
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM loaded, showing intro modal...");
+  if (introduction) introduction.style.display = "flex";
+});
+
+//Start button handler
+if (startBtn) {
+  startBtn.addEventListener("click", () => {
+    console.log("Start button clicked, initializing quiz...");
+    if (introduction) introduction.style.display = "none";
+    initQuiz();
+  });
+}
+
+//Intialize quiz with shuffling
 
 function initQuiz() {
+  console.log("Quiz initialized");
+  shuffle(dataQuestions); // shuffles the question each restart
+  console.log("Questions shuffled");
   currentQuestion = 0;
   score = 0;
   userAnswer = [];
   Object.keys(categoryScore).forEach((cat) => (categoryScore[cat] = 0));
   loadQuestion();
   nextBtn.disabled = true;
+  console.log("First question loaded");
 }
 
 //load questions
 
 function loadQuestion() {
-  const q = quizData[currentQuestion];
-  questionText.textContent = q.questions;
-  optionsContainer.innerHTML = "";
+  console.log(`Loading question ${currentQuestion + 1}`);
+  const q = dataQuestions[currentQuestion];
+  if (!q) {
+    console.log("No question data found");
+    return;
+  }
 
-  q.options.forEach((option, index) => {
-    const div = document.createElement("div");
-    div.className = "option";
-    div.innerHTML = `
-        <input type="radio" id="opt${index}" name="answer" value="${index}">
-        <label for="opt${index}">${option}</label>`;
+  if (questionText) questionText.textContent = q.question;
+  if (optionsContainer) {
+    optionsContainer.innerHTML = "";
+    q.options.forEach((option, index) => {
+      const div = document.createElement("div");
+      div.className = "option";
+      div.innerHTML = `
+            <input type="radio" id="opt${index}" name="answer" value="${index}">
+            <label for="opt${index}">${option}</label>`;
 
-    div.addEventListener("click", () => selectOption(index, div));
-    optionsContainer.appendChild(div);
-  });
+      div.addEventListener("click", () => selectOption(index, div));
+      optionsContainer.appendChild(div);
+    });
+  }
 
   updateProgress();
-  nextBtn.textContent =
-    currentQuestion === quizData.length - 1 ? "Submit" : "Next";
+  if (nextBtn) {
+    nextBtn.textContent =
+      currentQuestion === dataQuestions.length - 1 ? "Submit" : "Next";
+  }
+  console.log("Question loaded successfully");
 }
 
 // Select option
 
 function selectOption(index, element) {
+  console.log(`Option selected: ${index}`);
   document.querySelectorAll(".option").forEach((opt) => {
     opt.classList.remove("selected");
     const radio = opt.querySelector('input[type="radio"]');
-    radio.checked = false;
+    if (radio) radio.checked = false;
   });
 
   //select this one
   element.classList.add("selected");
-  element.querySelector('input[type="radio"]').checked = true;
-  nextBtn.disabled = false;
+  const radio = element.querySelector('input[type="radio"]');
+  if (radio) radio.checked = true;
+  if (nextBtn) nextBtn.disabled = false;
   userAnswer[currentQuestion] = index;
 }
 
 //next button handler
-
-nextBtn.addEventListener("click", () => {
-  if (currentQuestion < quizData.length - 1) {
-    currentQuestion++;
-    loadQuestion();
-    nextBtn.disabled = true;
-  } else {
-    calculateScore();
-    showResults();
-  }
-});
+if (nextBtn) {
+  nextBtn.addEventListener("click", () => {
+    if (currentQuestion < dataQuestions.length - 1) {
+      currentQuestion++;
+      loadQuestion();
+      nextBtn.disabled = true;
+    } else {
+      calculateScore();
+      showResults();
+    }
+  });
+}
 
 //update progress
-
 function updateProgress() {
-  const progress = ((currentQuestion + 1) / quizData.length) * 100;
-  progressFill.style.width = progress + "%";
-  progressText.textContent = `Question ${currentQuestion + 1} of ${
-    quizData.length
-  }`;
+  const progress = ((currentQuestion + 1) / dataQuestions.length) * 100;
+  if (progressFill) progressFill.style.width = progress + "%";
+  if (progressText)
+    progressText.textContent = `Question ${currentQuestion + 1} of ${
+      dataQuestions.length
+    }`;
 }
 
 //calculate the score
 
 function calculateScore() {
-  quizData.forEach((q, index) => {
+  console.log("Calculating score");
+  dataQuestions.forEach((q, index) => {
     if (userAnswer[index] === q.correct) {
       score++;
       categoryScore[q.category]++;
     }
   });
+  console.log(`Final score: ${score}/${dataQuestions.length}`);
 }
 
 //Show Results
 
 function showResults() {
-  questions.style.display = "none";
-  results.style.display = "block";
+  console.log("Showing results");
+  if (questions) questions.style.display = "none";
+  if (results) results.style.display = "block";
 
-  const percentage = Math.round((score / quizData.length) * 100);
-  displayScore.innerHTML = `
-        <div class="score">${score} / ${quizData.length}</div>
-        <div style="font-size: 1.2rem; color: #666;">${percentage}%</div>`;
+  const percentage = Math.round((score / dataQuestions.length) * 100);
+  if (displayScore) {
+    displayScore.innerHTML = `
+        <div class="score">${score} / ${dataQuestions.length}</div>
+        <div style="font-size: 1.2rem; color: #2a2929ff;">${percentage}%</div>`;
+  }
 
   //Category breakdown
-  category.innerHTML = "<h3>Category Breakdown</h3>";
-  Object.entries(categoryScore).forEach(([cat, catScore]) => {
-    const maxPerCat = 6; // number of questions per category
-    const catPercentage = Math.round((catScore / maxPerCat) * 100);
-    const div = document.createElement("div");
-    div.className = "category-item";
-    div.innerHTML = `
+  if (category) {
+    category.innerHTML = "<h3>Category Breakdown</h3>";
+    Object.entries(categoryScore).forEach(([cat, catScore]) => {
+      const maxPerCat = 6; // number of questions per category
+      const catPercentage = Math.round((catScore / maxPerCat) * 100);
+      const div = document.createElement("div");
+      div.className = "category-item";
+      div.innerHTML = `
           <span>${cat}</span>
           <span>${catScore}/${maxPerCat} (${catPercentage}%)</span>`;
 
-    category.appendChild(div);
+      category.appendChild(div);
+    });
+  }
+
+  if (answers) {
+    answers.innerHTML = "<h3>Answer Review</h3>";
+    dataQuestions.forEach((q, index) => {
+      const div = document.createElement("div");
+      div.className = "review-item";
+      const userAns = userAnswer[index]; // User's answer (might be string or undefined)
+      console.log(
+        `Q${
+          index + 1
+        }: userAns = ${userAns} (type: ${typeof userAns}), correct = ${
+          q.correct
+        } (type: ${typeof q.correct})`
+      ); // Debug log
+      // Handle undefined and convert to number for comparison
+      const isCorrect = userAns !== undefined && Number(userAns) === q.correct;
+      console.log(`Q${index + 1}: isCorrect = ${isCorrect}`); // Debug log
+      div.classList.add(isCorrect ? "correct" : "incorrect");
+      div.innerHTML = `
+        <p><strong>Q${index + 1}:</strong> ${q.question}</p>
+        <p>Your answer: ${q.options[userAns] || "Not answered"}</p>
+        <p>Correct: ${q.options[q.correct]}</p>
+    `;
+      answers.appendChild(div);
+    });
+  }
+}
+
+// Restart Quiz
+if (restartBtn) {
+  restartBtn.addEventListener("click", () => {
+    console.log("Restarting quiz");
+    if (questions) questions.style.display = "block";
+    if (results) results.style.display = "none";
+    initQuiz();
   });
 }
