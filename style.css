@@ -162,9 +162,10 @@ body {
     display: flex;
     justify-content: space-between;
     padding: 0.5rem;
-    background: #f8f9fa;
+    background: #bfc0c1;
     border-radius: 6px;
     margin-bottom: 0.5rem;
+    font-weight: 500;
 }
 
 .review-answers {
@@ -222,11 +223,13 @@ body {
     background-color: #f0f8ff;
     padding: 2rem;
     border-radius: 12px;
-    max-width: 500px;
+    max-width: 700px;
     width: 90%;
     text-align: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     animation: fadeIn 0.5s ease;
+    /* max-height: 90vh; */
+    overflow-y: auto;
 }
 
 .modal-content h2 {
@@ -291,6 +294,7 @@ body {
     .modal-content {
         padding: 1.5rem;
         max-width: 90%;
+        max-height: 90vh;
     }
     .modal-content h2 {
         font-size: 1.5rem;
